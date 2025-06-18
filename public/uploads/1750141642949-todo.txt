@@ -1,0 +1,3 @@
+
+protect route using middleware 
+complete profile 
