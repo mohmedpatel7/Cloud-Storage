@@ -8,7 +8,7 @@ import {
   FiInfo,
 } from "react-icons/fi";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
-import { getAllImages } from "@/Redux/slices/fileReducer";
+import { getAllImages, deleteImage } from "@/Redux/slices/fileReducer";
 import { useSelector } from "react-redux";
 import { RootState } from "@/Redux/store";
 import { useEffect, useState } from "react";
@@ -36,13 +36,12 @@ export default function AllImages() {
   const dispatch = useAppDispatch();
   const { getToken } = useAuth();
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const [fetchLoading, setFetchLoading] = useState<boolean>(false);
 
   const fileUpload = useSelector((state: RootState) => state.fileUpload);
   const imagesData = fileUpload?.getAllImages as unknown as
     | GetAllDataResponse
     | undefined;
-
-  const isLoading = fileUpload?.isLoading;
 
   const handleMenuClick = (fileId: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -63,12 +62,32 @@ export default function AllImages() {
 
   const fetchData = async () => {
     try {
+      setFetchLoading(true);
       const token = await getToken();
       if (token) {
-        dispatch(getAllImages(token));
+        await dispatch(getAllImages(token));
       }
     } catch (error) {
       console.error("Error fetching data:", error);
+    } finally {
+      setFetchLoading(false);
+    }
+  };
+
+  const handleDeleteImage = async (id: string) => {
+    try {
+      setFetchLoading(true);
+      const token = await getToken();
+      if (token) {
+        await dispatch(deleteImage({ id, token }));
+        await fetchData();
+        // Optionally show a toast here
+      }
+    } catch (error) {
+      // Optionally show a toast here
+      console.error("Error deleting image:", error);
+    } finally {
+      setFetchLoading(false);
     }
   };
 
@@ -87,7 +106,7 @@ export default function AllImages() {
 
   return (
     <div className="p-3 sm:p-4 md:p-6">
-      {isLoading ? (
+      {fetchLoading ? (
         <div className="flex items-center justify-center min-h-[calc(100vh-3rem)]">
           <Loader />
         </div>
@@ -144,7 +163,10 @@ export default function AllImages() {
                         <FiDownload size={14} />
                         <span className="truncate">Download</span>
                       </button>
-                      <button className="w-full px-3 sm:px-4 py-2 text-left text-xs sm:text-sm text-red-600 hover:bg-red-50 flex items-center space-x-2">
+                      <button
+                        className="w-full px-3 sm:px-4 py-2 text-left text-xs sm:text-sm text-red-600 hover:bg-red-50 flex items-center space-x-2"
+                        onClick={() => handleDeleteImage(file._id)}
+                      >
                         <FiTrash2 size={14} />
                         <span className="truncate">Delete</span>
                       </button>

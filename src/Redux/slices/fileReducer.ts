@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
-// API base URL
+// api base URL
 const url = "http://localhost:3000/";
 
 // Async thunk for file upload functionality
@@ -169,13 +169,154 @@ export const getAllDocuments = createAsyncThunk(
   }
 );
 
-// Async thunk for fetching all documents
+// Async thunk for fetching all audio
 export const getAllAudio = createAsyncThunk(
   "getAllAudio",
   async (token: string, { rejectWithValue }) => {
     try {
       const response = await fetch(`${url}api/fetchAudio`, {
         method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({
+          message: "Error in response!",
+        }));
+        return rejectWithValue(errorData);
+      }
+
+      const result = await response.json();
+      return result;
+    } catch (error) {
+      return rejectWithValue({ status: 500, error: error });
+    }
+  }
+);
+
+// Inteface for delete arguments.
+interface DeleteArgs {
+  id: string;
+  token: string;
+}
+
+// Async thunk for deleting single documents
+export const deleteFile = createAsyncThunk(
+  "deleteFile",
+  async ({ id, token }: DeleteArgs, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`${url}api/users/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({
+          message: "Error in response!",
+        }));
+        return rejectWithValue(errorData);
+      }
+
+      const result = await response.json();
+      return result;
+    } catch (error) {
+      return rejectWithValue({ status: 500, error: error });
+    }
+  }
+);
+
+// Async thunk for deleting single image
+export const deleteImage = createAsyncThunk(
+  "deleteImage",
+  async ({ id, token }: DeleteArgs, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`${url}api/fetchAllImages/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({
+          message: "Error in response!",
+        }));
+        return rejectWithValue(errorData);
+      }
+
+      const result = await response.json();
+      return result;
+    } catch (error) {
+      return rejectWithValue({ status: 500, error: error });
+    }
+  }
+);
+
+// Async thunk for deleting single video
+export const deleteVideo = createAsyncThunk(
+  "deleteVideo",
+  async ({ id, token }: DeleteArgs, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`${url}api/fetchAllVideos/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({
+          message: "Error in response!",
+        }));
+        return rejectWithValue(errorData);
+      }
+
+      const result = await response.json();
+      return result;
+    } catch (error) {
+      return rejectWithValue({ status: 500, error: error });
+    }
+  }
+);
+
+// Async thunk for deleting single documents
+export const deleteDocument = createAsyncThunk(
+  "deleteDocument",
+  async ({ id, token }: DeleteArgs, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`${url}api/fetchAllDocuments/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({
+          message: "Error in response!",
+        }));
+        return rejectWithValue(errorData);
+      }
+
+      const result = await response.json();
+      return result;
+    } catch (error) {
+      return rejectWithValue({ status: 500, error: error });
+    }
+  }
+);
+
+// Async thunk for deleting single audio
+export const deleteAudio = createAsyncThunk(
+  "deleteAudio",
+  async ({ id, token }: DeleteArgs, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`${url}api/fethcAllAudio/${id}`, {
+        method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -221,6 +362,7 @@ interface FileUploadState {
   getAllVideos: null;
   getAllDoc: null;
   getAllAud: null;
+  deleteFile: null;
   isLoading: boolean; // Loading state indicator
   error: string | null; // Error message storage
 }
@@ -234,6 +376,7 @@ const initialState: FileUploadState = {
   getAllVideos: null,
   getAllDoc: null,
   getAllAud: null,
+  deleteFile: null,
   isLoading: false,
   error: null,
 };
@@ -362,6 +505,87 @@ const fileUploadSlice = createSlice({
         state.getAllAud = action.payload;
       })
       .addCase(getAllAudio.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error =
+          (action.payload as { message?: string })?.message ||
+          "Something went wrong";
+      });
+
+    //Handling delete single file.
+    builder
+      .addCase(deleteFile.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(deleteFile.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.deleteFile = action.payload;
+      })
+      .addCase(deleteFile.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error =
+          (action.payload as { message?: string })?.message ||
+          "Something went wrong";
+      })
+
+      // Handling delete single image.
+      .addCase(deleteImage.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(deleteImage.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.deleteFile = action.payload;
+      })
+      .addCase(deleteImage.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error =
+          (action.payload as { message?: string })?.message ||
+          "Something went wrong";
+      })
+
+      // Handling delete single video.
+      .addCase(deleteVideo.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(deleteVideo.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.deleteFile = action.payload;
+      })
+      .addCase(deleteVideo.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error =
+          (action.payload as { message?: string })?.message ||
+          "Something went wrong";
+      })
+
+      // Handling delete single document.
+      .addCase(deleteDocument.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(deleteDocument.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.deleteFile = action.payload;
+      })
+      .addCase(deleteDocument.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error =
+          (action.payload as { message?: string })?.message ||
+          "Something went wrong";
+      })
+
+      // Handling delete single audio.
+      .addCase(deleteAudio.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(deleteAudio.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.deleteFile = action.payload;
+      })
+      .addCase(deleteAudio.rejected, (state, action) => {
         state.isLoading = false;
         state.error =
           (action.payload as { message?: string })?.message ||

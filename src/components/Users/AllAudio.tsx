@@ -8,7 +8,7 @@ import {
   FiInfo,
 } from "react-icons/fi";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
-import { getAllAudio } from "@/Redux/slices/fileReducer";
+import { getAllAudio, deleteAudio } from "@/Redux/slices/fileReducer";
 import { useSelector } from "react-redux";
 import { RootState } from "@/Redux/store";
 import { useEffect, useState } from "react";
@@ -36,6 +36,7 @@ export default function AllAud() {
   const dispatch = useAppDispatch();
   const { getToken } = useAuth();
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const [fetchLoading, setFetchLoading] = useState<boolean>(false);
 
   const fileUpload = useSelector((state: RootState) => state.fileUpload);
   const audioData = fileUpload?.getAllAud as unknown as
@@ -46,8 +47,6 @@ export default function AllAud() {
     e.stopPropagation();
     setOpenMenuId(openMenuId === fileId ? null : fileId);
   };
-
-  const isLoading = fileUpload?.isLoading;
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -63,12 +62,32 @@ export default function AllAud() {
 
   const fetchData = async () => {
     try {
+      setFetchLoading(true);
       const token = await getToken();
       if (token) {
-        dispatch(getAllAudio(token));
+        await dispatch(getAllAudio(token));
       }
     } catch (error) {
       console.error("Error fetching data:", error);
+    } finally {
+      setFetchLoading(false);
+    }
+  };
+
+  const handleDeleteAudio = async (id: string) => {
+    try {
+      setFetchLoading(true);
+      const token = await getToken();
+      if (token) {
+        await dispatch(deleteAudio({ id, token }));
+        await fetchData();
+        // Optionally show a toast here
+      }
+    } catch (error) {
+      // Optionally show a toast here
+      console.error("Error deleting audio:", error);
+    } finally {
+      setFetchLoading(false);
     }
   };
 
@@ -87,7 +106,7 @@ export default function AllAud() {
 
   return (
     <div className="p-3 sm:p-4 md:p-6">
-      {isLoading ? (
+      {fetchLoading ? (
         <div className="flex items-center justify-center min-h-[calc(100vh-3rem)]">
           <Loader />
         </div>
@@ -144,7 +163,10 @@ export default function AllAud() {
                         <FiDownload size={14} />
                         <span className="truncate">Download</span>
                       </button>
-                      <button className="w-full px-3 sm:px-4 py-2 text-left text-xs sm:text-sm text-red-600 hover:bg-red-50 flex items-center space-x-2">
+                      <button
+                        className="w-full px-3 sm:px-4 py-2 text-left text-xs sm:text-sm text-red-600 hover:bg-red-50 flex items-center space-x-2"
+                        onClick={() => handleDeleteAudio(file._id)}
+                      >
                         <FiTrash2 size={14} />
                         <span className="truncate">Delete</span>
                       </button>
