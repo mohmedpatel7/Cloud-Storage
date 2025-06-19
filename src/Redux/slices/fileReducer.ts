@@ -229,6 +229,52 @@ export const deleteFile = createAsyncThunk(
   }
 );
 
+// Async thunk for downloading a file by ID
+export const downloadFile = createAsyncThunk(
+  "downloadFile",
+  async ({ id, token }: { id: string; token: string }, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`${url}api/users/${id}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({
+          message: "Error in response!",
+        }));
+        return rejectWithValue(errorData);
+      }
+
+      //  Parse as binary (blob)
+      const blob = await response.blob();
+
+      //  Extract filename from response headers
+      const disposition = response.headers.get("Content-Disposition");
+      let filename = "downloaded_file";
+      if (disposition && disposition.includes("filename=")) {
+        filename = disposition.split("filename=")[1].replace(/"/g, "").trim();
+      }
+
+      // Create a download link and trigger click
+      const urlBlob = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = urlBlob;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(urlBlob);
+
+      return { status: "success", filename };
+    } catch (error) {
+      return rejectWithValue({ status: 500, error: error });
+    }
+  }
+);
+
 // Async thunk for deleting single image
 export const deleteImage = createAsyncThunk(
   "deleteImage",
@@ -250,6 +296,52 @@ export const deleteImage = createAsyncThunk(
 
       const result = await response.json();
       return result;
+    } catch (error) {
+      return rejectWithValue({ status: 500, error: error });
+    }
+  }
+);
+
+// Async thunk for downloading a file by ID
+export const downloadImage = createAsyncThunk(
+  "downloadImage",
+  async ({ id, token }: { id: string; token: string }, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`${url}api/fetchAllImages/${id}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({
+          message: "Error in response!",
+        }));
+        return rejectWithValue(errorData);
+      }
+
+      //  Parse as binary (blob)
+      const blob = await response.blob();
+
+      //  Extract filename from response headers
+      const disposition = response.headers.get("Content-Disposition");
+      let filename = "downloaded_file";
+      if (disposition && disposition.includes("filename=")) {
+        filename = disposition.split("filename=")[1].replace(/"/g, "").trim();
+      }
+
+      // Create a download link and trigger click
+      const urlBlob = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = urlBlob;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(urlBlob);
+
+      return { status: "success", filename };
     } catch (error) {
       return rejectWithValue({ status: 500, error: error });
     }
@@ -283,6 +375,52 @@ export const deleteVideo = createAsyncThunk(
   }
 );
 
+// Async thunk for downloading a file by ID
+export const downloadVideo = createAsyncThunk(
+  "downloadVideo",
+  async ({ id, token }: { id: string; token: string }, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`${url}api/fetchAllVideos/${id}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({
+          message: "Error in response!",
+        }));
+        return rejectWithValue(errorData);
+      }
+
+      //  Parse as binary (blob)
+      const blob = await response.blob();
+
+      //  Extract filename from response headers
+      const disposition = response.headers.get("Content-Disposition");
+      let filename = "downloaded_file";
+      if (disposition && disposition.includes("filename=")) {
+        filename = disposition.split("filename=")[1].replace(/"/g, "").trim();
+      }
+
+      // Create a download link and trigger click
+      const urlBlob = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = urlBlob;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(urlBlob);
+
+      return { status: "success", filename };
+    } catch (error) {
+      return rejectWithValue({ status: 500, error: error });
+    }
+  }
+);
+
 // Async thunk for deleting single documents
 export const deleteDocument = createAsyncThunk(
   "deleteDocument",
@@ -310,6 +448,52 @@ export const deleteDocument = createAsyncThunk(
   }
 );
 
+// Async thunk for downloading a file by ID
+export const downloadDocument = createAsyncThunk(
+  "downloadDocument",
+  async ({ id, token }: { id: string; token: string }, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`${url}api/fetchAllDocuments/${id}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({
+          message: "Error in response!",
+        }));
+        return rejectWithValue(errorData);
+      }
+
+      //  Parse as binary (blob)
+      const blob = await response.blob();
+
+      //  Extract filename from response headers
+      const disposition = response.headers.get("Content-Disposition");
+      let filename = "downloaded_file";
+      if (disposition && disposition.includes("filename=")) {
+        filename = disposition.split("filename=")[1].replace(/"/g, "").trim();
+      }
+
+      // Create a download link and trigger click
+      const urlBlob = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = urlBlob;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(urlBlob);
+
+      return { status: "success", filename };
+    } catch (error) {
+      return rejectWithValue({ status: 500, error: error });
+    }
+  }
+);
+
 // Async thunk for deleting single audio
 export const deleteAudio = createAsyncThunk(
   "deleteAudio",
@@ -331,6 +515,52 @@ export const deleteAudio = createAsyncThunk(
 
       const result = await response.json();
       return result;
+    } catch (error) {
+      return rejectWithValue({ status: 500, error: error });
+    }
+  }
+);
+
+// Async thunk for downloading a file by ID
+export const downloadAudio = createAsyncThunk(
+  "downloadAudio",
+  async ({ id, token }: { id: string; token: string }, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`${url}api/fetchAllAudio/${id}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({
+          message: "Error in response!",
+        }));
+        return rejectWithValue(errorData);
+      }
+
+      //  Parse as binary (blob)
+      const blob = await response.blob();
+
+      //  Extract filename from response headers
+      const disposition = response.headers.get("Content-Disposition");
+      let filename = "downloaded_file";
+      if (disposition && disposition.includes("filename=")) {
+        filename = disposition.split("filename=")[1].replace(/"/g, "").trim();
+      }
+
+      // Create a download link and trigger click
+      const urlBlob = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = urlBlob;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(urlBlob);
+
+      return { status: "success", filename };
     } catch (error) {
       return rejectWithValue({ status: 500, error: error });
     }
@@ -586,6 +816,63 @@ const fileUploadSlice = createSlice({
         state.deleteFile = action.payload;
       })
       .addCase(deleteAudio.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error =
+          (action.payload as { message?: string })?.message ||
+          "Something went wrong";
+      })
+
+      // Handling download image.
+      .addCase(downloadImage.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(downloadImage.fulfilled, (state) => {
+        state.isLoading = false;
+      })
+      .addCase(downloadImage.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error =
+          (action.payload as { message?: string })?.message ||
+          "Something went wrong";
+      })
+      // Handling download video.
+      .addCase(downloadVideo.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(downloadVideo.fulfilled, (state) => {
+        state.isLoading = false;
+      })
+      .addCase(downloadVideo.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error =
+          (action.payload as { message?: string })?.message ||
+          "Something went wrong";
+      })
+      // Handling download document.
+      .addCase(downloadDocument.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(downloadDocument.fulfilled, (state) => {
+        state.isLoading = false;
+      })
+      .addCase(downloadDocument.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error =
+          (action.payload as { message?: string })?.message ||
+          "Something went wrong";
+      })
+      // Handling download audio.
+      .addCase(downloadAudio.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(downloadAudio.fulfilled, (state) => {
+        state.isLoading = false;
+      })
+      .addCase(downloadAudio.rejected, (state, action) => {
         state.isLoading = false;
         state.error =
           (action.payload as { message?: string })?.message ||

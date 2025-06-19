@@ -8,12 +8,17 @@ import {
   FiInfo,
 } from "react-icons/fi";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
-import { getAllImages, deleteImage } from "@/Redux/slices/fileReducer";
+import {
+  getAllImages,
+  deleteImage,
+  downloadImage,
+} from "@/Redux/slices/fileReducer";
 import { useSelector } from "react-redux";
 import { RootState } from "@/Redux/store";
 import { useEffect, useState } from "react";
 import { useAuth } from "@clerk/clerk-react";
 import Loader from "../common/Loader";
+import { useToast } from "../common/ToastProivder";
 
 interface FileData {
   _id: string;
@@ -37,6 +42,8 @@ export default function AllImages() {
   const { getToken } = useAuth();
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const [fetchLoading, setFetchLoading] = useState<boolean>(false);
+
+  const { showToast } = useToast();
 
   const fileUpload = useSelector((state: RootState) => state.fileUpload);
   const imagesData = fileUpload?.getAllImages as unknown as
@@ -81,13 +88,26 @@ export default function AllImages() {
       if (token) {
         await dispatch(deleteImage({ id, token }));
         await fetchData();
-        // Optionally show a toast here
+        showToast("Deleted", "success");
       }
     } catch (error) {
       // Optionally show a toast here
       console.error("Error deleting image:", error);
     } finally {
       setFetchLoading(false);
+    }
+  };
+
+  const handleDownloadImage = async (id: string) => {
+    try {
+      const token = await getToken();
+      if (token) {
+        await dispatch(downloadImage({ id, token }));
+        showToast("Downloading", "success");
+      }
+    } catch (error) {
+      // Optionally show a toast for error
+      console.error("Error downloading image:", error);
     }
   };
 
@@ -159,7 +179,10 @@ export default function AllImages() {
                         <FiInfo size={14} />
                         <span className="truncate">Properties</span>
                       </button>
-                      <button className="w-full px-3 sm:px-4 py-2 text-left text-xs sm:text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2">
+                      <button
+                        className="w-full px-3 sm:px-4 py-2 text-left text-xs sm:text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
+                        onClick={() => handleDownloadImage(file._id)}
+                      >
                         <FiDownload size={14} />
                         <span className="truncate">Download</span>
                       </button>

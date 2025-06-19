@@ -8,12 +8,17 @@ import {
   FiInfo,
 } from "react-icons/fi";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
-import { getAllDocuments, deleteDocument } from "@/Redux/slices/fileReducer";
+import {
+  getAllDocuments,
+  deleteDocument,
+  downloadDocument,
+} from "@/Redux/slices/fileReducer";
 import { useSelector } from "react-redux";
 import { RootState } from "@/Redux/store";
 import { useEffect, useState } from "react";
 import { useAuth } from "@clerk/clerk-react";
 import Loader from "../common/Loader";
+import { useToast } from "../common/ToastProivder";
 
 interface FileData {
   _id: string;
@@ -37,6 +42,8 @@ export default function AllDocs() {
   const { getToken } = useAuth();
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const [fetchLoading, setFetchLoading] = useState<boolean>(false);
+
+  const { showToast } = useToast();
 
   const fileUpload = useSelector((state: RootState) => state.fileUpload);
   const documentsData = fileUpload?.getAllDoc as unknown as
@@ -81,13 +88,26 @@ export default function AllDocs() {
       if (token) {
         await dispatch(deleteDocument({ id, token }));
         await fetchData();
-        // Optionally show a toast here
+        showToast("Deleted", "success");
       }
     } catch (error) {
       // Optionally show a toast here
       console.error("Error deleting document:", error);
     } finally {
       setFetchLoading(false);
+    }
+  };
+
+  const handleDownloadDocument = async (id: string) => {
+    try {
+      const token = await getToken();
+      if (token) {
+        await dispatch(downloadDocument({ id, token }));
+        showToast("Downloading", "success");
+      }
+    } catch (error) {
+      // Optionally show a toast for error
+      console.error("Error downloading document:", error);
     }
   };
 
@@ -159,7 +179,10 @@ export default function AllDocs() {
                         <FiInfo size={14} />
                         <span className="truncate">Properties</span>
                       </button>
-                      <button className="w-full px-3 sm:px-4 py-2 text-left text-xs sm:text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2">
+                      <button
+                        className="w-full px-3 sm:px-4 py-2 text-left text-xs sm:text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
+                        onClick={() => handleDownloadDocument(file._id)}
+                      >
                         <FiDownload size={14} />
                         <span className="truncate">Download</span>
                       </button>

@@ -10,9 +10,14 @@ import {
   FiTrash2,
   FiInfo,
   FiHardDrive,
+  FiExternalLink,
 } from "react-icons/fi";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
-import { deleteFile, getAllFiles } from "@/Redux/slices/fileReducer";
+import {
+  deleteFile,
+  getAllFiles,
+  downloadFile,
+} from "@/Redux/slices/fileReducer";
 import { useSelector } from "react-redux";
 import { RootState } from "@/Redux/store";
 import { useEffect, useState } from "react";
@@ -97,6 +102,19 @@ export default function AllFiles() {
     } catch (error) {
       showToast(`${error}`);
       console.error("Error fetching data:", error);
+    }
+  };
+
+  const handleDownloadFile = async (id: string) => {
+    try {
+      const token = await getToken();
+      if (token) {
+        await dispatch(downloadFile({ id, token }));
+        showToast("File Dowloading", "success");
+      }
+    } catch (error) {
+      // Optionally show a toast for error
+      console.error("Error downloading file:", error);
     }
   };
 
@@ -190,7 +208,10 @@ export default function AllFiles() {
                           <FiInfo size={14} />
                           <span className="truncate">Properties</span>
                         </button>
-                        <button className="w-full px-3 sm:px-4 py-2 text-left text-xs sm:text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2">
+                        <button
+                          className="w-full px-3 sm:px-4 py-2 text-left text-xs sm:text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
+                          onClick={() => handleDownloadFile(file._id)}
+                        >
                           <FiDownload size={14} />
                           <span className="truncate">Download</span>
                         </button>

@@ -83,3 +83,62 @@ export const DELETE = async (
     });
   }
 };
+
+// GET route to download a file by ID
+export const GET = async (
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) => {
+  try {
+    // 1. Authenticate the user using Clerk
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json(
+        { error: "Authorization Failed!" },
+        { status: 401 }
+      );
+    }
+
+    // 2. Extract file ID from URL params
+    const id = params.id;
+    if (!id) {
+      return NextResponse.json({ error: "Id not found!" }, { status: 404 });
+    }
+
+    // 3. Connect to the MongoDB database
+    await connectDB();
+
+    // 4. Find the file in the DB using its ID
+    const file = await FileSchema.findById(id);
+    if (!file) {
+      return NextResponse.json({ error: "File not found" }, { status: 404 });
+    }
+
+    // 5. Read file from disk using its saved path
+    const filePath = path.join(
+      process.cwd(),
+      "public",
+      file.filePath.replace(/^\\|^\//, "")
+    );
+    const originalName = file.originalName;
+    const buffer = await fs.readFile(filePath); // Read file content
+
+    // 6. Return file as download with original name
+    return new NextResponse(buffer, {
+      status: 200,
+      headers: {
+        "Content-Type": "application/octet-stream",
+        "Content-Disposition": `attachment; filename="${originalName}"`,
+      },
+    });
+  } catch (error) {
+    console.error(
+      "Error while downloading file:",
+      (error as Error).stack || error
+    );
+    return NextResponse.json({
+      status: 500,
+      message: "Internal Server Error!",
+    });
+  }
+};
