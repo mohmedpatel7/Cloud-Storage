@@ -10,7 +10,6 @@ import {
   FiTrash2,
   FiInfo,
   FiHardDrive,
-  FiExternalLink,
 } from "react-icons/fi";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import {
