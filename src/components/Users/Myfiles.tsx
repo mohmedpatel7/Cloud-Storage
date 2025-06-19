@@ -47,11 +47,11 @@ const MyFiles = () => {
     percentage: getDbStats?.storage?.usedPercent,
   };
 
-  const fileStats = [
+  const fileStats = getDbStats?.fileStats || [
     {
-      type: getDbStats?.fileStats[0].type,
-      count: getDbStats?.fileStats[0].count,
-      size: getDbStats?.fileStats[0].size,
+      type: "Images",
+      count: 0,
+      size: "0 B",
       icon: FiImage,
       color: "bg-blue-500",
       bgColor: "bg-blue-50",
@@ -59,9 +59,9 @@ const MyFiles = () => {
       route: "/allImages",
     },
     {
-      type: getDbStats?.fileStats[1].type,
-      count: getDbStats?.fileStats[1].count,
-      size: getDbStats?.fileStats[1].size,
+      type: "Videos",
+      count: 0,
+      size: "0 B",
       icon: FiVideo,
       color: "bg-red-500",
       bgColor: "bg-red-50",
@@ -69,9 +69,9 @@ const MyFiles = () => {
       route: "/allVideos",
     },
     {
-      type: getDbStats?.fileStats[2].type,
-      count: getDbStats?.fileStats[2].count,
-      size: getDbStats?.fileStats[2].size,
+      type: "Documents",
+      count: 0,
+      size: "0 B",
       icon: FiFileText,
       color: "bg-green-500",
       bgColor: "bg-green-50",
@@ -79,9 +79,9 @@ const MyFiles = () => {
       route: "/allDocuments",
     },
     {
-      type: getDbStats?.fileStats[3].type,
-      count: getDbStats?.fileStats[3].count,
-      size: getDbStats?.fileStats[3].size,
+      type: "Audio",
+      count: 0,
+      size: "0 B",
       icon: FiMusic,
       color: "bg-purple-500",
       bgColor: "bg-purple-50",
@@ -89,6 +89,43 @@ const MyFiles = () => {
       route: "/allAudio",
     },
   ];
+
+  // Map icons, colors, and routes to fileStats if data is available
+  const fileTypeMeta = [
+    {
+      icon: FiImage,
+      color: "bg-blue-500",
+      bgColor: "bg-blue-50",
+      textColor: "#1D4ED8",
+      route: "/allImages",
+    },
+    {
+      icon: FiVideo,
+      color: "bg-red-500",
+      bgColor: "bg-red-50",
+      textColor: "#DC2626",
+      route: "/allVideos",
+    },
+    {
+      icon: FiFileText,
+      color: "bg-green-500",
+      bgColor: "bg-green-50",
+      textColor: "#16A34A",
+      route: "/allDocuments",
+    },
+    {
+      icon: FiMusic,
+      color: "bg-purple-500",
+      bgColor: "bg-purple-50",
+      textColor: "#7E22CE",
+      route: "/allAudio",
+    },
+  ];
+
+  const mergedFileStats = fileStats.map((stat, idx) => ({
+    ...stat,
+    ...fileTypeMeta[idx],
+  }));
 
   return (
     <div className="p-3 sm:p-4 md:p-6">
@@ -131,7 +168,7 @@ const MyFiles = () => {
 
           {/* File Type Cards Grid */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4">
-            {fileStats.map((stat) => (
+            {mergedFileStats.map((stat) => (
               <div
                 key={stat.type}
                 className="bg-white rounded-xl shadow-sm p-3 sm:p-4 md:p-6 cursor-pointer hover:shadow-md transition-shadow"

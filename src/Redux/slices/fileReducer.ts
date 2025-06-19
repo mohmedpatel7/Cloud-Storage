@@ -197,10 +197,19 @@ export const getAllAudio = createAsyncThunk(
 );
 
 // Define the shape of database stats
+interface FileTypeStat {
+  type: string;
+  count: number;
+  size: string;
+}
+
 interface DatabaseStats {
-  used: string;
-  usedPercent: string;
-  maxStorage: string;
+  storage: {
+    used: string;
+    usedPercent: string;
+    maxStorage: string;
+  };
+  fileStats: FileTypeStat[];
 }
 
 // State interface definition
