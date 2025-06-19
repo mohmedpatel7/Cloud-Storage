@@ -39,21 +39,19 @@ const MyFiles = () => {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, []); // Add getToken as dependency
 
   const storageData = {
-    total: getDbStats?.storage?.maxStorage || 0,
-    used: getDbStats?.storage?.used || 0,
-    percentage: getDbStats?.storage?.usedPercent || 0,
+    total: getDbStats?.storage?.maxStorage,
+    used: getDbStats?.storage?.used,
+    percentage: getDbStats?.storage?.usedPercent,
   };
-
-  const stats = getDbStats?.fileStats || [];
 
   const fileStats = [
     {
-      type: stats[0]?.type || "Images",
-      count: stats[0]?.count || 0,
-      size: stats[0]?.size || "0 MB",
+      type: getDbStats?.fileStats[0].type,
+      count: getDbStats?.fileStats[0].count,
+      size: getDbStats?.fileStats[0].size,
       icon: FiImage,
       color: "bg-blue-500",
       bgColor: "bg-blue-50",
@@ -61,9 +59,9 @@ const MyFiles = () => {
       route: "/allImages",
     },
     {
-      type: stats[1]?.type || "Videos",
-      count: stats[1]?.count || 0,
-      size: stats[1]?.size || "0 MB",
+      type: getDbStats?.fileStats[1].type,
+      count: getDbStats?.fileStats[1].count,
+      size: getDbStats?.fileStats[1].size,
       icon: FiVideo,
       color: "bg-red-500",
       bgColor: "bg-red-50",
@@ -71,9 +69,9 @@ const MyFiles = () => {
       route: "/allVideos",
     },
     {
-      type: stats[2]?.type || "Documents",
-      count: stats[2]?.count || 0,
-      size: stats[2]?.size || "0 MB",
+      type: getDbStats?.fileStats[2].type,
+      count: getDbStats?.fileStats[2].count,
+      size: getDbStats?.fileStats[2].size,
       icon: FiFileText,
       color: "bg-green-500",
       bgColor: "bg-green-50",
@@ -81,9 +79,9 @@ const MyFiles = () => {
       route: "/allDocuments",
     },
     {
-      type: stats[3]?.type || "Audio",
-      count: stats[3]?.count || 0,
-      size: stats[3]?.size || "0 MB",
+      type: getDbStats?.fileStats[3].type,
+      count: getDbStats?.fileStats[3].count,
+      size: getDbStats?.fileStats[3].size,
       icon: FiMusic,
       color: "bg-purple-500",
       bgColor: "bg-purple-50",
@@ -126,7 +124,7 @@ const MyFiles = () => {
             <div className="w-full bg-gray-200 rounded-full h-2 sm:h-2.5">
               <div
                 className="bg-blue-600 h-2 sm:h-2.5 rounded-full transition-all duration-300"
-                style={{ width: `${storageData.percentage}%` }}
+                style={{ width: ${storageData.percentage}% }}
               ></div>
             </div>
           </div>
@@ -141,7 +139,7 @@ const MyFiles = () => {
               >
                 <div className="flex items-center space-x-2 sm:space-x-3 md:space-x-4">
                   <div
-                    className={`p-2 sm:p-2.5 md:p-3 ${stat.bgColor} rounded-lg`}
+                    className={p-2 sm:p-2.5 md:p-3 ${stat.bgColor} rounded-lg}
                   >
                     <stat.icon size={18} color={stat.textColor} />
                   </div>
@@ -166,4 +164,4 @@ const MyFiles = () => {
   );
 };
 
-export default MyFiles;
+export default MyFiles; 
