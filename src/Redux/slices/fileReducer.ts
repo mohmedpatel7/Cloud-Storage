@@ -8,7 +8,7 @@ export const uploadFile = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      const response = await fetch(`api/users`, {
+      const response = await fetch(`//api/users`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${fileData.token}`,
@@ -36,7 +36,7 @@ export const getDatabaseStats = createAsyncThunk(
   "getDatabaseStats",
   async (token: string, { rejectWithValue }) => {
     try {
-      const response = await fetch(`api/databaseinfo`, {
+      const response = await fetch(`/api/databaseinfo`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -63,7 +63,7 @@ export const getAllFiles = createAsyncThunk(
   "getAllFiles",
   async (token: string, { rejectWithValue }) => {
     try {
-      const response = await fetch(`api/users`, {
+      const response = await fetch(`/api/users`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -90,7 +90,7 @@ export const getAllImages = createAsyncThunk(
   "getAllImages",
   async (token: string, { rejectWithValue }) => {
     try {
-      const response = await fetch(`api/fetchAllImages`, {
+      const response = await fetch(`/api/fetchAllImages`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -117,7 +117,7 @@ export const getAllVideos = createAsyncThunk(
   "getAllVideos",
   async (token: string, { rejectWithValue }) => {
     try {
-      const response = await fetch(`api/fetchAllVideos`, {
+      const response = await fetch(`/api/fetchAllVideos`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -144,7 +144,7 @@ export const getAllDocuments = createAsyncThunk(
   "getAllDocuments",
   async (token: string, { rejectWithValue }) => {
     try {
-      const response = await fetch(`api/fetchAllDocuments`, {
+      const response = await fetch(`/api/fetchAllDocuments`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -171,7 +171,7 @@ export const getAllAudio = createAsyncThunk(
   "getAllAudio",
   async (token: string, { rejectWithValue }) => {
     try {
-      const response = await fetch(`api/fetchAudio`, {
+      const response = await fetch(`/api/fetchAudio`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -204,7 +204,7 @@ export const deleteFile = createAsyncThunk(
   "deleteFile",
   async ({ id, token }: DeleteArgs, { rejectWithValue }) => {
     try {
-      const response = await fetch(`api/users/${id}`, {
+      const response = await fetch(`/api/users/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -231,7 +231,7 @@ export const downloadFile = createAsyncThunk(
   "downloadFile",
   async ({ id, token }: { id: string; token: string }, { rejectWithValue }) => {
     try {
-      const response = await fetch(`api/users/${id}`, {
+      const response = await fetch(`/api/users/${id}`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -277,7 +277,7 @@ export const deleteImage = createAsyncThunk(
   "deleteImage",
   async ({ id, token }: DeleteArgs, { rejectWithValue }) => {
     try {
-      const response = await fetch(`api/fetchAllImages/${id}`, {
+      const response = await fetch(`/api/fetchAllImages/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -304,7 +304,7 @@ export const downloadImage = createAsyncThunk(
   "downloadImage",
   async ({ id, token }: { id: string; token: string }, { rejectWithValue }) => {
     try {
-      const response = await fetch(`api/fetchAllImages/${id}`, {
+      const response = await fetch(`/api/fetchAllImages/${id}`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -350,7 +350,7 @@ export const deleteVideo = createAsyncThunk(
   "deleteVideo",
   async ({ id, token }: DeleteArgs, { rejectWithValue }) => {
     try {
-      const response = await fetch(`api/fetchAllVideos/${id}`, {
+      const response = await fetch(`/api/fetchAllVideos/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -377,7 +377,7 @@ export const downloadVideo = createAsyncThunk(
   "downloadVideo",
   async ({ id, token }: { id: string; token: string }, { rejectWithValue }) => {
     try {
-      const response = await fetch(`api/fetchAllVideos/${id}`, {
+      const response = await fetch(`/api/fetchAllVideos/${id}`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -423,7 +423,7 @@ export const deleteDocument = createAsyncThunk(
   "deleteDocument",
   async ({ id, token }: DeleteArgs, { rejectWithValue }) => {
     try {
-      const response = await fetch(`api/fetchAllDocuments/${id}`, {
+      const response = await fetch(`/api/fetchAllDocuments/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -450,7 +450,7 @@ export const downloadDocument = createAsyncThunk(
   "downloadDocument",
   async ({ id, token }: { id: string; token: string }, { rejectWithValue }) => {
     try {
-      const response = await fetch(`api/fetchAllDocuments/${id}`, {
+      const response = await fetch(`/api/fetchAllDocuments/${id}`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -496,7 +496,7 @@ export const deleteAudio = createAsyncThunk(
   "deleteAudio",
   async ({ id, token }: DeleteArgs, { rejectWithValue }) => {
     try {
-      const response = await fetch(`api/fethcAllAudio/${id}`, {
+      const response = await fetch(`/api/fethcAllAudio/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -523,7 +523,7 @@ export const downloadAudio = createAsyncThunk(
   "downloadAudio",
   async ({ id, token }: { id: string; token: string }, { rejectWithValue }) => {
     try {
-      const response = await fetch(`api/fetchAllAudio/${id}`, {
+      const response = await fetch(`/api/fetchAllAudio/${id}`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -569,7 +569,7 @@ export const getFileProp = createAsyncThunk(
   "getFileProp",
   async ({ id, token }: { id: string; token: string }, { rejectWithValue }) => {
     try {
-      const response = await fetch(`api/fetchProp/${id}`, {
+      const response = await fetch(`/api/fetchProp/${id}`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -596,7 +596,7 @@ export const openFile = createAsyncThunk(
   "openFile",
   async ({ id, token }: { id: string; token: string }, { rejectWithValue }) => {
     try {
-      const response = await fetch(`api/openFIle/${id}`, {
+      const response = await fetch(`/api/openFIle/${id}`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
