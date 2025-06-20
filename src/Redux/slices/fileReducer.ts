@@ -8,7 +8,7 @@ export const uploadFile = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      const response = await fetch(`//api/users`, {
+      const response = await fetch(`/api/users`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${fileData.token}`,
@@ -171,7 +171,7 @@ export const getAllAudio = createAsyncThunk(
   "getAllAudio",
   async (token: string, { rejectWithValue }) => {
     try {
-      const response = await fetch(`/api/fetchAudio`, {
+      const response = await fetch(`/api/fetchAllAudio`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -496,7 +496,7 @@ export const deleteAudio = createAsyncThunk(
   "deleteAudio",
   async ({ id, token }: DeleteArgs, { rejectWithValue }) => {
     try {
-      const response = await fetch(`/api/fethcAllAudio/${id}`, {
+      const response = await fetch(`/api/fetchAllAudio/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
