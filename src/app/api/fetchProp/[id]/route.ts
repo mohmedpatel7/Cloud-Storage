@@ -5,7 +5,7 @@ import { auth } from "@clerk/nextjs/server";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const { userId } = await auth();
@@ -15,7 +15,7 @@ export async function GET(
         message: "Authorization Failed !",
       });
 
-    const id = params.id;
+    const { id } = await context.params;
     if (!id)
       return NextResponse.json({ status: 404, message: "Id not found !" });
 

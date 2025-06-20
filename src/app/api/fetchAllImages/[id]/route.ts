@@ -7,7 +7,7 @@ import path from "path";
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const { userId } = await auth();
@@ -18,7 +18,7 @@ export async function DELETE(
       );
     }
 
-    const id = await params.id;
+    const { id } = await context.params;
     if (!id) {
       return NextResponse.json({ error: "Id not found!" }, { status: 404 });
     }
@@ -87,7 +87,7 @@ export async function DELETE(
 // GET route to download a file by ID
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     // 1. Authenticate the user using Clerk
@@ -100,7 +100,7 @@ export async function GET(
     }
 
     // 2. Extract file ID from URL params
-    const id = params.id;
+    const { id } = await context.params;
     if (!id) {
       return NextResponse.json({ error: "Id not found!" }, { status: 404 });
     }
