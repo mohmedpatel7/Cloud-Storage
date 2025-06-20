@@ -7,3 +7,10 @@ export default function page() {
     </>
   );
 }
+
+export async function generateMetadata() {
+  return {
+    title: "Document",
+    description: "View and Manage all Documents.",
+  };
+}

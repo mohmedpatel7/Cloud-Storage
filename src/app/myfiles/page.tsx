@@ -7,3 +7,10 @@ export default function page() {
     </>
   );
 }
+
+export async function generateMetadata() {
+  return {
+    title: "MyFiles",
+    description: "View and Manage all Files.",
+  };
+}

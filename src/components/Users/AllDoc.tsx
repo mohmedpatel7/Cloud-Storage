@@ -9,6 +9,7 @@ import {
   FiImage,
   FiVideo,
   FiMusic,
+  FiExternalLink,
 } from "react-icons/fi";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import {
@@ -16,6 +17,7 @@ import {
   deleteDocument,
   downloadDocument,
   getFileProp,
+  openFile,
 } from "@/Redux/slices/fileReducer";
 import { useSelector } from "react-redux";
 import { RootState } from "@/Redux/store";
@@ -200,6 +202,18 @@ export default function AllDocs() {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
 
+  // Handler for opening file in new tab
+  const handleOpenFile = async (id: string) => {
+    try {
+      const token = await getToken();
+      if (token) {
+        await dispatch(openFile({ id, token })).unwrap();
+      }
+    } catch {
+      showToast("Failed to open file", "error");
+    }
+  };
+
   return (
     <div className="p-3 sm:p-4 md:p-6">
       {fetchLoading ? (
@@ -221,6 +235,7 @@ export default function AllDocs() {
             <div
               key={file._id}
               className="bg-white rounded-xl shadow-sm p-3 sm:p-4 md:p-6 cursor-pointer hover:shadow-md transition-shadow"
+              onDoubleClick={() => handleOpenFile(file._id)}
             >
               <div className="flex items-center space-x-2 sm:space-x-3 md:space-x-4">
                 <div className="p-2 sm:p-2.5 md:p-3 bg-green-50 rounded-lg">
@@ -251,6 +266,13 @@ export default function AllDocs() {
                   </button>
                   {openMenuId === file._id && (
                     <div className="absolute right-0 mt-2 w-36 sm:w-40 md:w-48 bg-white rounded-lg shadow-lg py-1 z-10">
+                      <button
+                        className="w-full px-3 sm:px-4 py-2 text-left text-xs sm:text-sm text-blue-700 hover:bg-blue-50 flex items-center space-x-2"
+                        onClick={() => handleOpenFile(file._id)}
+                      >
+                        <FiExternalLink size={14} />
+                        <span className="truncate">Open</span>
+                      </button>
                       <button
                         className="w-full px-3 sm:px-4 py-2 text-left text-xs sm:text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
                         onClick={(e) => {

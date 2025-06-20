@@ -7,3 +7,10 @@ export default function page() {
     </>
   );
 }
+
+export async function generateMetadata() {
+  return {
+    title: "Sign up",
+    description: "Sign up to Cloud Storage.",
+  };
+}

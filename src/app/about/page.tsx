@@ -8,4 +8,11 @@ const about = () => {
   );
 };
 
+export async function generateMetadata() {
+  return {
+    title: "About Us",
+    description: "About Cloud Storage",
+  };
+}
+
 export default about;

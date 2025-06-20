@@ -1,7 +1,8 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 // api base URL
-const url = "http://localhost:3000/";
+//const url = "http://localhost:3000/";
+const url = "https://cloud-storage-ten.vercel.app/";
 
 // Async thunk for file upload functionality
 export const uploadFile = createAsyncThunk(
@@ -594,6 +595,38 @@ export const getFileProp = createAsyncThunk(
   }
 );
 
+// Async thunk for opening a file in a new tab
+export const openFile = createAsyncThunk(
+  "openFile",
+  async ({ id, token }: { id: string; token: string }, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`http://localhost:3000/api/openFIle/${id}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({
+          message: "Error in response!",
+        }));
+        return rejectWithValue(errorData);
+      }
+
+      // Open file in new tab
+      const blob = await response.blob();
+      const urlBlob = window.URL.createObjectURL(blob);
+      window.open(urlBlob, "_blank");
+      // Optionally revoke the object URL after some time
+      setTimeout(() => window.URL.revokeObjectURL(urlBlob), 10000);
+      return { status: "success" };
+    } catch (error) {
+      return rejectWithValue({ status: 500, error: error });
+    }
+  }
+);
+
 // Define the shape of database stats
 interface FileTypeStat {
   type: string;
@@ -930,5 +963,4 @@ const fileUploadSlice = createSlice({
 });
 
 export const { clearError } = fileUploadSlice.actions;
-
 export default fileUploadSlice.reducer;

@@ -7,3 +7,10 @@ export default function Home() {
     </>
   );
 }
+
+export async function generateMetadata() {
+  return {
+    title: "Cloud Storage",
+    description: "Cloud Storage Welcomes You.",
+  };
+}
