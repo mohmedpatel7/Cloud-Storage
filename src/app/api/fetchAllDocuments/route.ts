@@ -3,7 +3,7 @@ import { connectDB } from "@/lib/Database/database";
 import FileSchema from "@/lib/Schema_Models/FileSchema";
 import { auth } from "@clerk/nextjs/server";
 
-export const GET = async () => {
+export async function GET() {
   try {
     const { userId } = await auth();
     if (!userId)
@@ -32,4 +32,4 @@ export const GET = async () => {
       message: "Internal Server Error!",
     });
   }
-};
+}

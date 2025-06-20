@@ -69,7 +69,7 @@ export const POST = async (req: Request) => {
   }
 };
 
-export const GET = async () => {
+export async function GET() {
   try {
     const { userId } = await auth();
     if (!userId)
@@ -92,4 +92,4 @@ export const GET = async () => {
       message: "Internal Server Error!",
     });
   }
-};
+}

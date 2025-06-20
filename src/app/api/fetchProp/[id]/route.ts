@@ -3,10 +3,10 @@ import FileSchema from "@/lib/Schema_Models/FileSchema";
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 
-export const GET = async (
+export async function GET(
   req: NextRequest,
   { params }: { params: { id: string } }
-) => {
+) {
   try {
     const { userId } = await auth();
     if (!userId)
@@ -41,4 +41,4 @@ export const GET = async (
       message: "Internal Server Error!",
     });
   }
-};
+}

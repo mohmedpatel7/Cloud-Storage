@@ -5,10 +5,10 @@ import { auth } from "@clerk/nextjs/server";
 import fs from "fs/promises";
 import path from "path";
 
-export const DELETE = async (
+export async function DELETE(
   req: NextRequest,
   { params }: { params: { id: string } }
-) => {
+) {
   try {
     const { userId } = await auth();
     if (!userId) {
@@ -82,13 +82,13 @@ export const DELETE = async (
       message: "Internal Server Error!",
     });
   }
-};
+}
 
 // GET route to download a file by ID
-export const GET = async (
+export async function GET(
   req: NextRequest,
   { params }: { params: { id: string } }
-) => {
+) {
   try {
     // 1. Authenticate the user using Clerk
     const { userId } = await auth();
@@ -141,4 +141,4 @@ export const GET = async (
       message: "Internal Server Error!",
     });
   }
-};
+}

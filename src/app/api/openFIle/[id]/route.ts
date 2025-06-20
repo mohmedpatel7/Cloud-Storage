@@ -5,10 +5,10 @@ import { auth } from "@clerk/nextjs/server";
 import fs from "fs";
 import path from "path";
 
-export const GET = async (
+export async function GET(
   req: NextRequest,
   context: { params: { id: string } }
-) => {
+) {
   try {
     const { userId } = await auth();
     if (!userId)
@@ -58,4 +58,4 @@ export const GET = async (
       message: "Internal Server Error!",
     });
   }
-};
+}

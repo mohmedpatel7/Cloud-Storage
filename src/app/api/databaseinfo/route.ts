@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import FileSchema from "@/lib/Schema_Models/FileSchema";
 import { auth } from "@clerk/nextjs/server";
 
-export const GET = async () => {
+export async function GET() {
   try {
     // ✅ Authenticate user
     const { userId } = await auth();
@@ -77,7 +77,7 @@ export const GET = async () => {
       Error: error,
     });
   }
-};
+}
 
 // Utility to format bytes to human-readable units
 function formatBytes(bytes: number): string {
