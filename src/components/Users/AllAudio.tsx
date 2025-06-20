@@ -6,16 +6,20 @@ import {
   FiDownload,
   FiTrash2,
   FiInfo,
+  FiImage,
+  FiVideo,
+  FiFileText,
 } from "react-icons/fi";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import {
   getAllAudio,
   deleteAudio,
   downloadAudio,
+  getFileProp,
 } from "@/Redux/slices/fileReducer";
 import { useSelector } from "react-redux";
 import { RootState } from "@/Redux/store";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useAuth } from "@clerk/clerk-react";
 import Loader from "../common/Loader";
 import { useToast } from "../common/ToastProivder";
@@ -42,6 +46,11 @@ export default function AllAud() {
   const { getToken } = useAuth();
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const [fetchLoading, setFetchLoading] = useState<boolean>(false);
+  const [showPropModal, setShowPropModal] = useState(false);
+  const [propLoading, setPropLoading] = useState(false);
+  const [propError, setPropError] = useState<string | null>(null);
+  const [fileProp, setFileProp] = useState<FileData | null>(null);
+  const modalRef = useRef<HTMLDivElement | null>(null);
 
   const { showToast } = useToast();
 
@@ -111,6 +120,73 @@ export default function AllAud() {
     }
   };
 
+  // Helper to get icon and color for file type
+  const getFileTypeIcon = (type: string) => {
+    if (type.startsWith("image/")) {
+      return { icon: FiImage, bg: "bg-blue-50", color: "#1D4ED8" };
+    } else if (type.startsWith("video/")) {
+      return { icon: FiVideo, bg: "bg-red-50", color: "#DC2626" };
+    } else if (type.startsWith("audio/")) {
+      return { icon: FiMusic, bg: "bg-purple-50", color: "#7E22CE" };
+    } else {
+      return { icon: FiFileText, bg: "bg-green-50", color: "#16A34A" };
+    }
+  };
+
+  // Handler for showing file properties
+  const handleShowProperties = async (id: string) => {
+    setPropLoading(true);
+    setPropError(null);
+    setShowPropModal(true);
+    setFileProp(null);
+    try {
+      const token = await getToken();
+      if (token) {
+        // Use the same API as AllFiles, adjust if needed
+        const result = await dispatch(getFileProp({ id, token })).unwrap();
+        setFileProp(result.result || null);
+      } else {
+        setPropError("No token found");
+        showToast("No token found", "error");
+      }
+    } catch (error: unknown) {
+      let message = "Failed to fetch properties";
+      if (error instanceof Error) {
+        message = error.message;
+      } else if (typeof error === "object" && error && "message" in error) {
+        message = (error as { message?: string }).message || message;
+      }
+      setPropError(message);
+      showToast(message, "error");
+    } finally {
+      setPropLoading(false);
+    }
+  };
+
+  // Handler for closing modal and refreshing data
+  const closeModal = async () => {
+    setShowPropModal(false);
+    setFileProp(null);
+    setPropError(null);
+    setOpenMenuId(null);
+    await fetchData();
+  };
+
+  // Effect to close modal and menu on outside click
+  useEffect(() => {
+    if (!showPropModal) return;
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        modalRef.current &&
+        !modalRef.current.contains(event.target as Node)
+      ) {
+        closeModal();
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [showPropModal]);
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -175,7 +251,13 @@ export default function AllAud() {
                   </button>
                   {openMenuId === file._id && (
                     <div className="absolute right-0 mt-2 w-36 sm:w-40 md:w-48 bg-white rounded-lg shadow-lg py-1 z-10">
-                      <button className="w-full px-3 sm:px-4 py-2 text-left text-xs sm:text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2">
+                      <button
+                        className="w-full px-3 sm:px-4 py-2 text-left text-xs sm:text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleShowProperties(file._id);
+                        }}
+                      >
                         <FiInfo size={14} />
                         <span className="truncate">Properties</span>
                       </button>
@@ -199,6 +281,93 @@ export default function AllAud() {
               </div>
             </div>
           ))}
+        </div>
+      )}
+      {showPropModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-auto">
+          <div
+            ref={modalRef}
+            className="bg-white rounded-2xl p-8 w-full max-w-md relative shadow-2xl overflow-hidden"
+            style={{ boxShadow: "0 8px 40px rgba(0,0,0,0.18)" }}
+          >
+            {/* Large faded icon in modal background */}
+            {fileProp && (
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none">
+                {(() => {
+                  const { icon: Icon, color } = getFileTypeIcon(fileProp.type);
+                  return (
+                    <Icon size={160} color={color} style={{ opacity: 0.08 }} />
+                  );
+                })()}
+              </div>
+            )}
+            <button
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 text-3xl font-bold transition-colors z-10"
+              onClick={closeModal}
+              style={{ lineHeight: 1 }}
+            >
+              ×
+            </button>
+            {propLoading ? (
+              <div className="flex items-center justify-center min-h-[180px] z-10">
+                <Loader />
+              </div>
+            ) : propError ? (
+              <div className="text-red-500 z-10">{propError}</div>
+            ) : fileProp ? (
+              <div className="relative z-10">
+                <h2 className="text-2xl font-extrabold mb-2 text-gray-800 flex items-center gap-2">
+                  File Properties
+                </h2>
+                <div className="h-px bg-gray-200 my-3" />
+                <div className="space-y-3 text-base">
+                  <div>
+                    <b>Name:</b>{" "}
+                    <span className="text-gray-700">
+                      {fileProp.originalName}
+                    </span>
+                  </div>
+                  <div>
+                    <b>Type:</b>{" "}
+                    <span className="text-gray-700">{fileProp.type}</span>
+                  </div>
+                  <div>
+                    <b>Size:</b>{" "}
+                    <span className="text-gray-700">{fileProp.size} bytes</span>
+                  </div>
+                  <div>
+                    <b>Date:</b>{" "}
+                    <span className="text-gray-700">
+                      {new Date(fileProp.uploadDate).toLocaleString()}
+                    </span>
+                  </div>
+                </div>
+                <div className="flex gap-4 mt-8">
+                  <button
+                    className="flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow transition-colors"
+                    onClick={() =>
+                      fileProp && handleDownloadAudio(fileProp._id)
+                    }
+                  >
+                    <FiDownload size={18} /> Download
+                  </button>
+                  <button
+                    className="flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white font-semibold shadow transition-colors"
+                    onClick={async () => {
+                      if (fileProp) {
+                        await handleDeleteAudio(fileProp._id);
+                        closeModal();
+                      }
+                    }}
+                  >
+                    <FiTrash2 size={18} /> Delete
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="z-10">No data found.</div>
+            )}
+          </div>
         </div>
       )}
     </div>

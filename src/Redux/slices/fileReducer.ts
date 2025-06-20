@@ -567,6 +567,33 @@ export const downloadAudio = createAsyncThunk(
   }
 );
 
+// Async thunk for fetching file properties.
+export const getFileProp = createAsyncThunk(
+  "getFileProp",
+  async ({ id, token }: { id: string; token: string }, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`${url}api/fetchProp/${id}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({
+          message: "Error in response!",
+        }));
+        return rejectWithValue(errorData);
+      }
+
+      const result = await response.json();
+      return result;
+    } catch (error) {
+      return rejectWithValue({ status: 500, error: error });
+    }
+  }
+);
+
 // Define the shape of database stats
 interface FileTypeStat {
   type: string;
@@ -836,6 +863,7 @@ const fileUploadSlice = createSlice({
           (action.payload as { message?: string })?.message ||
           "Something went wrong";
       })
+
       // Handling download video.
       .addCase(downloadVideo.pending, (state) => {
         state.isLoading = true;
@@ -850,6 +878,7 @@ const fileUploadSlice = createSlice({
           (action.payload as { message?: string })?.message ||
           "Something went wrong";
       })
+
       // Handling download document.
       .addCase(downloadDocument.pending, (state) => {
         state.isLoading = true;
@@ -864,6 +893,7 @@ const fileUploadSlice = createSlice({
           (action.payload as { message?: string })?.message ||
           "Something went wrong";
       })
+
       // Handling download audio.
       .addCase(downloadAudio.pending, (state) => {
         state.isLoading = true;
@@ -873,6 +903,24 @@ const fileUploadSlice = createSlice({
         state.isLoading = false;
       })
       .addCase(downloadAudio.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error =
+          (action.payload as { message?: string })?.message ||
+          "Something went wrong";
+      });
+
+    // Handling fetching properties of file cases.
+    builder
+      .addCase(getFileProp.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(getFileProp.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.getAllData = action.payload;
+        state.error = null;
+      })
+      .addCase(getFileProp.rejected, (state, action) => {
         state.isLoading = false;
         state.error =
           (action.payload as { message?: string })?.message ||
